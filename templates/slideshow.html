@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Lifebrain Signage</title>
+        <meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="text/html; charset=iso-8859-2" http-equiv="Content-Type">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+<style>
+.mySlides {display:none;}
+</style>
+</head>
+
+<body>
+
+
+<div class="w3-content w3-section">
+
+ <img class="mySlides" src="/static/uploads/slides/converted0.jpg" style="width:100%">
+  <img class="mySlides" src="/static/uploads/slides/converted1.jpg" style="width:100%">
+  <img class="mySlides" src="/static/uploads/slides/converted2.jpg" style="width:100%">
+  <img class="mySlides" src="/static/uploads/slides/converted3.jpg" style="width:100%">
+  <img class="mySlides" src="/static/uploads/slides/converted4.jpg" style="width:100%">
+  <img class="mySlides" src="/static/uploads/slides/converted5.jpg" style="width:100%">
+
+</div>
+
+<script>
+var myIndex = 0;
+carousel();
+
+function carousel() {
+  var i;
+  var x = document.getElementsByClassName("mySlides");
+  for (i = 0; i < x.length; i++) {
+    x[i].style.display = "none";
+  }
+  myIndex++;
+  if (myIndex > x.length) {myIndex = 1}
+  x[myIndex-1].style.display = "block";
+  setTimeout(carousel, 30000); // Change image every x msseconds
+}
+</script>
+
+</body>
+</html>
