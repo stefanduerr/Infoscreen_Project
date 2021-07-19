@@ -6,7 +6,6 @@ from typing import List, Any
 
 
 app = Flask(__name__)
-FLASK_ENV = 'development'
 UPLOAD_FOLDER = '/Users/lukas.schweighofer/PycharmProjects/flaskProject/static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = {'pdf'}
@@ -45,7 +44,7 @@ def upload_file():
 @app.route('/uploads/<name>')
 def download_file(name):
     filepath = '/Users/lukas.schweighofer/PycharmProjects/flaskProject/static/uploads/' + name
-    imagepath = '/Users/lukas.schweighofer/PycharmProjects/flaskProject/static/uploads/slides/converted'
+    imagepath = '/Users/lukas.schweighofer/PycharmProjects/flaskProject/static/uploads/slides/'+name
     images: List[any] = convert_from_path(filepath, dpi=200)
     for i in range(len(images)):
         # Save pages as images in the pdf
@@ -57,10 +56,22 @@ def download_file(name):
 
 
 @app.route('/uploads/slides', methods=['GET', 'POST'])
-def slideshow():
-    images = os.listdir('/Users/lukas.schweighofer/PycharmProjects/flaskProject/static/uploads/slides/')
+def slideshow_static():
     return render_template('slideshow.html')
 
 
+@app.route('/slides/', methods=['GET', 'POST'])
+def slideshow_loop():
+    images = os.listdir('/Users/lukas.schweighofer/PycharmProjects/flaskProject/static/uploads/slides/')
+    return render_template('slides.html',
+                           images=images,)
 
 
+@app.route('/kpis')
+def kpi_dashboard():
+    return render_template('kpi.html')
+
+
+@app.route('/clear', methods =['DELETE'])
+def clear_slides():
+    return ('Slides cleared')
