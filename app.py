@@ -1,10 +1,10 @@
 import os
-import glob
 from pathlib import Path
 from flask import Flask, flash, request, redirect, url_for, send_from_directory, render_template
 from werkzeug.utils import secure_filename
 from pdf2image import convert_from_path
 from typing import List, Any
+import cv2
 
 
 app = Flask(__name__)
@@ -62,11 +62,18 @@ def slideshow_static():
     return render_template('slideshow.html')
 
 
-@app.route('/slides/', methods=['GET', 'POST'])
+@app.route('/slides', methods=['GET', 'POST'])
 def slideshow_loop():
     images = os.listdir('/Users/lukas.schweighofer/PycharmProjects/flaskProjectTV/static/uploads/slides/')
     return render_template('slides.html',
                            images=images,)
+
+
+@app.route('/video')
+def play_video():
+
+    return render_template('player.html')
+
 
 
 @app.route('/kpis')
