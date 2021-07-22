@@ -96,3 +96,7 @@ h3 {
     left:-100%; right:-100%;
     margin:auto;
 }
+.table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}

@@ -80,5 +80,8 @@ def clear_slides():
     filelist = [f for f in os.listdir(mydir) if f.endswith(".jpg")]
     for f in filelist:
         os.remove(os.path.join(mydir, f))
+    filelist = [f for f in os.listdir(UPLOAD_FOLDER) if f.endswith(".pdf")]
+    for f in filelist:
+        os.remove(os.path.join(UPLOAD_FOLDER, f))
 
-    return 'Slides cleared'
+    return 'Slides cleared!'
