@@ -4,10 +4,17 @@ from flask import Flask, flash, request, redirect, url_for, send_from_directory,
 from werkzeug.utils import secure_filename
 from pdf2image import convert_from_path
 from typing import List, Any
-import cv2
+from flask_caching import Cache
 
+config = {
+    "DEBUG": True,          # some Flask specific configs
+    "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
+    "CACHE_DEFAULT_TIMEOUT": 300
+}
 
 app = Flask(__name__)
+app.config.from_mapping(config)
+cache = Cache(app)
 UPLOAD_FOLDER = '/Users/lukas.schweighofer/PycharmProjects/flaskProjectTV/static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = {'pdf'}
@@ -46,7 +53,7 @@ def upload_file():
 @app.route('/uploads/<name>')
 def download_file(name):
     filepath = '/Users/lukas.schweighofer/PycharmProjects/flaskProjectTV/static/uploads/' + name
-    imagepath = '/Users/lukas.schweighofer/PycharmProjects/flaskProjectTV/static/uploads/slides/'+name
+    imagepath = '/Users/lukas.schweighofer/PycharmProjects/flaskProjectTV/static/uploads/slides/' + name
     images: List[any] = convert_from_path(filepath, dpi=200)
     for i in range(len(images)):
         # Save pages as images in the pdf
@@ -62,18 +69,17 @@ def slideshow_static():
     return render_template('slideshow.html')
 
 
-@app.route('/slides', methods=['GET', 'POST'])
+@app.route('/slides/', methods=['GET', 'POST'])
 def slideshow_loop():
     images = os.listdir('/Users/lukas.schweighofer/PycharmProjects/flaskProjectTV/static/uploads/slides/')
     return render_template('slides.html',
-                           images=images,)
+                           images=images, )
 
 
-@app.route('/video')
+@app.route('/video', methods=['GET'])
+@cache.cached(timeout=50)
 def play_video():
-
     return render_template('player.html')
-
 
 
 @app.route('/kpis')
