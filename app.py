@@ -7,7 +7,7 @@ from typing import List, Any
 from flask_caching import Cache
 
 config = {
-    "DEBUG": True,          # some Flask specific configs
+    "DEBUG": True,  # some Flask specific configs
     "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
     "CACHE_DEFAULT_TIMEOUT": 300
 }
@@ -25,7 +25,13 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
+@cache.cached(timeout=50)
+def play_video():
+    return render_template('player.html')
+
+
+@app.route('/home')
 def home():
     return render_template('index.html')
 
@@ -76,15 +82,15 @@ def slideshow_loop():
                            images=images, )
 
 
-@app.route('/video', methods=['GET'])
-@cache.cached(timeout=50)
-def play_video():
-    return render_template('player.html')
-
-
 @app.route('/kpis')
 def kpi_dashboard():
-    return render_template('kpi.html')
+    # platzhalter für api od db request
+    probenforecast_upper = 200000
+    probenforecast_lower = 190000
+    return render_template('kpi.html',
+                           # pass an template
+                           probenforecastUpper=probenforecast_upper,
+                           probenforecastLower=probenforecast_lower, )
 
 
 @app.route('/clear/', methods=['GET', 'DELETE'])
