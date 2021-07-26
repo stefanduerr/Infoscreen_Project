@@ -1,19 +1,30 @@
 import requests
+import json
 import trello_auth
 
-orgId = "60e7f97643060b58d1ea63c6"
-# For instance, if you wanted to get all of the cards for a board you could use: https://api.trello.com/1/boards/{boardId}/cards or https://api.trello.com/1/boards/{boardId}/?cards=all
-response = requests.get(
-    "https://api.trello.com/1/members/me/boards?key=" + trello_auth.key + "&token=" + trello_auth.token)
-print(response.text)
-# f = open("response.txt", "x")
-# f.write(response.text)
-# f.close()
-# https://api.trello.com/1/boards/{boardId}/cards
-# boards = requests.get("https://api.trello.com/1/organizations /"+orgId+"?boards=open")
-# print(boards)
-boardTestTvId = "60e80b27ff95224ceef4cfd1"
-f = open("cardsTV.json", "w")
-f.write(requests.get("https://api.trello.com/1/boards/60e80b27ff95224ceef4cfd1//cards?key=" + trello_auth.key
-                     + "&token=" + trello_auth.token).text)
-f.close()
+
+def get_daily_forecast():
+    url = "https://api.trello.com/1/cards/"
+    forecast_card_id = '60fe9cba105c670979f8b078'
+    headers = {
+        "Accept": "application/json"
+    }
+
+    query = {
+        'key': trello_auth.key,
+        'token': trello_auth.token
+    }
+
+    daily_forecast = requests.request(
+        "GET",
+        url + forecast_card_id,
+        headers=headers,
+        params=query
+    )
+
+    daily_forecast = daily_forecast.json()
+    print(daily_forecast)
+    print(daily_forecast["name"])
+    print(daily_forecast["dateLastActivity"])
+    print(json.dumps(json.loads(daily_forecast.text), sort_keys=True, indent=4, separators=(",", ": ")))
+

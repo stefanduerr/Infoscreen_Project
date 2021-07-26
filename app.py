@@ -1,10 +1,15 @@
 import os
 from pathlib import Path
+
+import requests
 from flask import Flask, flash, request, redirect, url_for, send_from_directory, render_template
 from werkzeug.utils import secure_filename
 from pdf2image import convert_from_path
 from typing import List, Any
 from flask_caching import Cache
+import json
+
+import trello_auth
 
 config = {
     "DEBUG": True,  # some Flask specific configs
@@ -84,7 +89,6 @@ def slideshow_loop():
 
 @app.route('/kpis')
 def kpi_dashboard():
-    # platzhalter für api od db request
     probenforecast_upper = 200000
     probenforecast_lower = 190000
     return render_template('kpi.html',
