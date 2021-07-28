@@ -27,4 +27,3 @@ def get_daily_forecast():
     print(daily_forecast["name"])
     print(daily_forecast["dateLastActivity"])
     print(json.dumps(json.loads(daily_forecast.text), sort_keys=True, indent=4, separators=(",", ": ")))
-
