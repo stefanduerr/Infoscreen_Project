@@ -1,14 +1,10 @@
 import os
-from pathlib import Path
-import requests
 from flask import Flask, flash, request, redirect, url_for, send_from_directory, render_template
 from werkzeug.utils import secure_filename
 from pdf2image import convert_from_path
 from typing import List, Any
 from flask_caching import Cache
-import json
 
-import trello_auth
 
 config = {
     "DEBUG": True,  # some Flask specific configs
