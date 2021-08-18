@@ -25,13 +25,13 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/', methods=['GET'])
+@app.route('/infoscreen', methods=['GET'])
 @cache.cached(timeout=50)
 def play_video():
     return render_template('player.html')
 
 
-@app.route('/home')
+@app.route('/')
 def home():
     return render_template('index.html')
 
@@ -88,11 +88,6 @@ def download_file(name):
         app.config["UPLOAD_FOLDER"],
         name,
     )
-
-
-@app.route('/uploads/slides', methods=['GET', 'POST'])
-def slideshow_static():
-    return render_template('slideshow.html')
 
 
 @app.route('/slides/', methods=['GET', 'POST'])
