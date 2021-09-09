@@ -2,7 +2,7 @@ import os
 from flask import Flask, flash, request, redirect, url_for, send_from_directory, render_template
 from werkzeug.utils import secure_filename
 from pdf2image import convert_from_path
-from typing import List, Any
+from typing import List
 from flask_caching import Cache
 
 
@@ -16,7 +16,9 @@ app = Flask(__name__)
 app.config.from_mapping(config)
 cache = Cache(app)
 UPLOAD_FOLDER = '/Users/lukas.schweighofer/PycharmProjects/flaskProjectTV/static/uploads'
+UPLOAD_VIDEO = '/Users/lukas.schweighofer/PycharmProjects/flaskProjectTV/static/uploads/video'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOAD_VIDEO'] = UPLOAD_VIDEO
 ALLOWED_EXTENSIONS = {'mp4', 'pdf'}
 
 
@@ -25,13 +27,15 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/infoscreen', methods=['GET'])
+@app.route('/', methods=['GET'])
 @cache.cached(timeout=50)
 def play_video():
-    return render_template('player.html')
+    videos = os.listdir('/Users/lukas.schweighofer/PycharmProjects/flaskProjectTV/static/uploads/video/')
+    return render_template('player.html',
+                           videos=videos)
 
 
-@app.route('/')
+@app.route('/home')
 def home():
     return render_template('index.html')
 
@@ -71,8 +75,8 @@ def upload_video():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('download_file', name=filename))
+            file.save(os.path.join(app.config['UPLOAD_VIDEO'], filename))
+            return render_template('video_uploaded.html')
     return render_template('upload.html')
 
 
@@ -108,13 +112,16 @@ def kpi_dashboard():
 
 
 @app.route('/clear/', methods=['GET', 'DELETE'])
+#  Route um Pdf-Slides zu leeren
 def clear_slides():
-    mydir = UPLOAD_FOLDER + '/slides'
+    mydir = UPLOAD_FOLDER
     filelist = [f for f in os.listdir(mydir) if f.endswith(".jpg")]
     for f in filelist:
         os.remove(os.path.join(mydir, f))
-    filelist = [f for f in os.listdir(UPLOAD_FOLDER) if f.endswith(".pdf")]
+    filelist = [f for f in os.listdir(mydir) if f.endswith(".pdf")]
     for f in filelist:
-        os.remove(os.path.join(UPLOAD_FOLDER, f))
-
+        os.remove(os.path.join(mydir, f))
+    filelist = [f for f in os.listdir('/Users/lukas.schweighofer/PycharmProjects/flaskProjectTV/static/uploads/video/') if f.endswith(".mp4")]
+    for f in filelist:
+        os.remove(os.path.join(mydir, f))
     return 'Slides cleared!'
