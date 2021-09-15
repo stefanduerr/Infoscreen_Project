@@ -5,7 +5,6 @@ from pdf2image import convert_from_path
 from typing import List
 from flask_caching import Cache
 
-
 config = {
     "DEBUG": True,  # some Flask specific configs
     "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
@@ -73,6 +72,11 @@ def upload_video():
         if file.filename == ' ':
             flash('No selected file')
             return redirect(request.url)
+        files = [f for f in
+                 os.listdir('/Users/lukas.schweighofer/PycharmProjects/flaskProjectTV/static/uploads/video/')
+                 if f.endswith(".mp4")]
+        for f in files:
+            os.remove(os.path.join('/Users/lukas.schweighofer/PycharmProjects/flaskProjectTV/static/uploads/video/', f))
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_VIDEO'], filename))
@@ -101,27 +105,18 @@ def slideshow_loop():
                            images=images, )
 
 
-@app.route('/kpis')
-def kpi_dashboard():
-    probenforecast_upper = 200000
-    probenforecast_lower = 190000
-    return render_template('kpi.html',
-                           # pass an template
-                           probenforecastUpper=probenforecast_upper,
-                           probenforecastLower=probenforecast_lower, )
-
-
 @app.route('/clear/', methods=['GET', 'DELETE'])
 #  Route um Pdf-Slides zu leeren
 def clear_slides():
     mydir = UPLOAD_FOLDER
-    filelist = [f for f in os.listdir(mydir) if f.endswith(".jpg")]
-    for f in filelist:
+    files = [f for f in os.listdir(mydir) if f.endswith(".jpg")]
+    for f in files:
         os.remove(os.path.join(mydir, f))
-    filelist = [f for f in os.listdir(mydir) if f.endswith(".pdf")]
-    for f in filelist:
+    files = [f for f in os.listdir(mydir) if f.endswith(".pdf")]
+    for f in files:
         os.remove(os.path.join(mydir, f))
-    filelist = [f for f in os.listdir('/Users/lukas.schweighofer/PycharmProjects/flaskProjectTV/static/uploads/video/') if f.endswith(".mp4")]
-    for f in filelist:
-        os.remove(os.path.join(mydir, f))
+    files = [f for f in os.listdir('/Users/lukas.schweighofer/PycharmProjects/flaskProjectTV/static/uploads/video/')
+             if f.endswith(".mp4")]
+    for f in files:
+        os.remove(os.path.join('/Users/lukas.schweighofer/PycharmProjects/flaskProjectTV/static/uploads/video/', f))
     return 'Slides cleared!'
