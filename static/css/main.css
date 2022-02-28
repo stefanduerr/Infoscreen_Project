@@ -77,7 +77,7 @@ h3 {
 }
 .button {
   border: none;
-  color: white;
+  color: #97b2d0 ;
   padding: 15px 32px;
   text-align: center;
   text-decoration: none;
@@ -97,6 +97,31 @@ h3 {
     margin:auto;
 }
 .table, th, td {
-  border: 1px solid black;
   border-collapse: collapse;
 }
+button:hover, img:hover{
+  background-color: rgba(151, 178, 208, 0.5);
+}
+.container {
+    display: block;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+.content-section {
+  background: rgba(119, 167, 220, 0.23);
+  padding: 5px 5px;
+  border: 1px solid #dddddd;
+  border-radius: 3px;
+  margin-bottom: 10px;
+}
+.form-group{
+  background: rgba(119, 167, 220, 0.23);
+  padding: 20px 20px;
+  border: 1px solid #dddddd;
+  border-radius: 3px;
+  margin-bottom: 20px;
+}
+table.fixed {table-layout:fixed; width:200px;}/*Setting the table width is important!*/
+table.fixed td {overflow:hidden;}/*Hide text outside the cell.*/
+table.fixed td:nth-of-type(1) {width:40px;}/*Setting the width of column 1.*/
+table.fixed td:nth-of-type(2) {width:40px;}/*Setting the width of column 2.*/
+table.fixed td:nth-of-type(3) {width:20px;}/*Setting the width of column 3.*/

@@ -3,11 +3,11 @@
 <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <meta charset="UTF-8">
-    <title>Lifebrain Signage</title>
+    <title>Lifebrain Infoscreen</title>
 </head>
 <body>
-<h1>Lifebrain Covid-Labor - Digital Signage</h1>
-<img src="\static\images\logo.svg" width="70px" height="66px"  margin="0" onclick="window.location.href = '/'">
+<h1>Lifebrain Covid-Labor - Infoscreen</h1>
+<img src="{{ url_for('static',filename='images/logo.svg') }}" width="70px" height="66px"   margin="200" onclick="window.location.href = '/'">
 </body>
 <div class="container">
     {% block content %}{% endblock %}
