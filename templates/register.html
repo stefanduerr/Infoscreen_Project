@@ -3,8 +3,10 @@
     <div class="content-section">
         <form method="POST" action="">
             {{ form.hidden_tag() }}
-            <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Join Today</legend>
+            <div class="formcontainer">
+            <h4>Register</h4>
+            
+                
                 <div class="form-group">
                     {{ form.username.label(class="form-control-label") }}
 
@@ -58,10 +60,11 @@
                         {{ form.confirm_password(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
-            </fieldset>
+            
             <div class="form-group">
                 {{ form.submit(class="btn btn-outline-info") }}
             </div>
+        </div>
         </form>
     </div>
     <div class="border-top pt-3">

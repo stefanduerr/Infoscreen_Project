@@ -3,16 +3,28 @@ from flask import Flask, flash, request, redirect, url_for, send_from_directory,
 from werkzeug.utils import secure_filename
 from flask_caching import Cache
 from pathlib import Path
-from forms import RegistrationForm, LoginForm
+# import forms
+from forms import *
 from flask_sqlalchemy import SQLAlchemy
 import csv
+import logging
+from datetime import datetime
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager, UserMixin, login_user, current_user, logout_user, login_required
+
+
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 app = Flask(__name__)
 config = {
     "SECRET_KEY": "6d8ed540960d1085d183d8e5d236f2da",
     "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
-    "CACHE_DEFAULT_TIMEOUT": 300
+    "CACHE_DEFAULT_TIMEOUT": 300,
+    "TEMPLATES_AUTO_RELOAD": True
 }
+
+
 app.config.from_mapping(config)
 cache = Cache(app)
 CWD = Path.cwd()
@@ -23,21 +35,62 @@ UPLOAD_VIDEO = Path.cwd().joinpath('static', 'uploads', 'video')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['UPLOAD_VIDEO'] = UPLOAD_VIDEO
 ALLOWED_EXTENSIONS = {'mp4'}
+cur_dat = datetime.now()
+current_datetime = cur_dat.strftime("%d/%m/%Y %H:%M:%S")
+
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
+    sites = db.relationship('Site', backref='creator', lazy=True)
+
+
+def __repr__(self):
+    return f"User('{self.username}', '{self.email}', '{self.image_file}')"
+
+
+class Site(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20), unique=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+
+def __repr__(self):
+    return f"User('{self.username}', '{self.email}', '{self.image_file}')"
+
+def init_db():
+
+    db.create_all()
+    # new_user = User(username='testuser212', email='ax@1a.com', password='password')
+    # db.session.add(new_user)
+    # db.session.commit() 
+    print('test')
+
+init_db()
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+loginstatus="true"
 
 @app.route('/')
 @app.route('/home')
 def home():
     return render_template('index.html',
-                           sites=get_sites())
+                           sites=get_sites(), state=loginstatus)
 
 
 @app.route('/stream/<site>', methods=['GET'])
@@ -51,6 +104,7 @@ def play_video(site):
     return render_template('player.html',
                            site=site,
                            videos=videos)
+
 
 
 def get_sites():
@@ -88,10 +142,12 @@ def upload_video(folder):
         for f in files:
             os.remove(os.path.join(UPLOAD_VIDEO, f))
         if file and allowed_file(file.filename):
+            logging.basicConfig(filename="logfile.log", level=logging.INFO)
+            logging.info(" " + current_datetime + ": " + current_user.username + ' uploaded ' + file.filename + ' on ' + folder + '.')
             filename = secure_filename(file.filename)
             file.save(Path.cwd().joinpath('static', 'uploads', 'video', folder, filename))
             return render_template('video_uploaded.html')
-    return render_template('upload.html')
+    return render_template('upload.html'), folder
 
 
 @app.route('/clear/<site>', methods=['GET', 'DELETE'])
@@ -107,24 +163,60 @@ def clear_slides(site):
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     form = RegistrationForm()
     if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(username = form.username.data, email = form.email.data, password = hashed_password)
+        db.session.add(user)
+        db.session.commit()
         flash(f'Account created for {form.username.data}!', 'success')
-        return redirect(url_for('home'))
+        return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
-        if form.email.data == 'admin@blog.com' and form.password.data == 'password':
-            flash('You have been logged in!', 'success')
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            print('login sccsf')
+            login_user(user, remember=form.remember.data)
             return redirect(url_for('home'))
         else:
             flash('Login Unsuccessful. Please check username and password', 'danger')
     return render_template('login.html', title='Login', form=form)
 
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
+
+@app.route("/account")
+@login_required
+def account():
+    return render_template('account.html', title='Account')
+
+@app.route("/editscreens")
+@login_required
+def editscreens():
+    return render_template('editscreens.html',
+                           sites=get_sites(), state=loginstatus)
+
+print('hello waorld')
+# init_db()
+
+# mylist = list(range(1, 51))
+# for x in mylist:
+#     print("10.90.12." + str(x))
+
+
 
 if __name__ == '__main__':
+    
     app.run(debug=True)
+    
