@@ -8,7 +8,7 @@ from forms import *
 from flask_sqlalchemy import SQLAlchemy
 import csv
 import logging
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user, logout_user, login_required
 
@@ -36,6 +36,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['UPLOAD_VIDEO'] = UPLOAD_VIDEO
 ALLOWED_EXTENSIONS = {'mp4'}
 cur_dat = datetime.now()
+today = date.today() 
+# - timedelta(days=1)  =   yesterday
 current_datetime = cur_dat.strftime("%d/%m/%Y %H:%M:%S")
 
 
@@ -86,13 +88,22 @@ def allowed_file(filename):
 
 loginstatus="true"
 
-@app.route('/')
+
+
+@app.route('/', methods=['GET'])
+def default():
+    return render_template('player.html')
+
 @app.route('/home')
 def home():
     return render_template('index.html',
                            sites=get_sites(), state=loginstatus)
 
-
+# @app.route('/', methods=['GET'])
+# def play_video2():
+#     videos = os.listdir('/home/lukas.schweighofer/flaskProjectTV/static/uploads/video/')
+#     return render_template('player.html',
+#     videos=videos)
 @app.route('/stream/<site>', methods=['GET'])
 @cache.cached(timeout=50)
 def play_video(site):
@@ -142,7 +153,8 @@ def upload_video(folder):
         for f in files:
             os.remove(os.path.join(UPLOAD_VIDEO, f))
         if file and allowed_file(file.filename):
-            logging.basicConfig(filename="logfile.log", level=logging.INFO)
+            LFname = "Log " + str(today) + ".log"
+            logging.basicConfig(filename=LFname, level=logging.INFO)
             logging.info(" " + current_datetime + ": " + current_user.username + ' uploaded ' + file.filename + ' on ' + folder + '.')
             filename = secure_filename(file.filename)
             file.save(Path.cwd().joinpath('static', 'uploads', 'video', folder, filename))
@@ -208,6 +220,16 @@ def editscreens():
                            sites=get_sites(), state=loginstatus)
 
 print('hello waorld')
+
+# def compare_test():
+#     a = "abs"
+#     b = "abs"
+#     if not a is b:
+#         print('xti') 
+#     else:
+#         print('xtc')
+
+# compare_test()
 # init_db()
 
 # mylist = list(range(1, 51))

@@ -4,10 +4,28 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 # import app
 from app import *
+import re
 
+file = open('registration_key.txt', 'r')
+read = file.readlines()
+regex = r"[][']"
+patn = re.sub(regex, "", str(read))
+print("test" + patn)
 
 
 class RegistrationForm(FlaskForm):
+
+    def validate_reg(self, registration_token):
+        print(str(registration_token.data))
+        reg_token = patn
+        r_t = str(registration_token.data)
+        print(reg_token)
+        if not r_t == reg_token:
+            print('ti') 
+            raise ValidationError('Token is incorrect.')
+        else:
+            print('tc')
+
     username = StringField('Username',
                            validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email',
@@ -15,6 +33,7 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password',
                                      validators=[DataRequired(), EqualTo('password')])
+    registration_token = StringField('Registration Token', validators=[DataRequired(), validate_reg])
     submit = SubmitField('Sign Up')
 
     def validate_username(self, username):
@@ -27,6 +46,16 @@ class RegistrationForm(FlaskForm):
         if email:
             raise ValidationError('E-Mail is taken.')
 
+    # def validate_reg(self, registration_token):
+    #     reg_token = "hCQAGqak3x"
+    #     print("regT: " + registration_token)
+    #     if not registration_token is reg_token:
+    #         print('ti') 
+    #         raise ValidationError('Token is incorrect.')
+    #     else:
+    #         print('tc')
+
+    
 
 
 class LoginForm(FlaskForm):
