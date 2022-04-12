@@ -78,7 +78,7 @@ def init_db():
     # new_user = User(username='testuser212', email='ax@1a.com', password='password')
     # db.session.add(new_user)
     # db.session.commit() 
-    print('test')
+    # print('test')
 
 init_db()
 
@@ -219,7 +219,7 @@ def editscreens():
     return render_template('editscreens.html',
                            sites=get_sites(), state=loginstatus)
 
-print('hello waorld')
+# print('hello waorld')
 
 # def compare_test():
 #     a = "abs"
