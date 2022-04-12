@@ -88,7 +88,9 @@ def allowed_file(filename):
 
 loginstatus="true"
 
-
+@app.route('/error_test_page', methods=['GET'])
+def notFound():
+    return render_template('error_test_page.html')
 
 @app.route('/', methods=['GET'])
 def default():
