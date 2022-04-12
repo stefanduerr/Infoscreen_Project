@@ -94,7 +94,7 @@ def notFound():
 
 @app.route('/', methods=['GET'])
 def default():
-    return render_template('player.html')
+    return render_template('default.html')
 
 @app.route('/home')
 def home():
