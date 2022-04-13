@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 # import app
-from app import User
+
 import re
 
 file = open('registration_key.txt', 'r')
@@ -22,7 +22,7 @@ class RegistrationForm(FlaskForm):
         if not r_t == reg_token:
             # print('ti') 
             raise ValidationError('Token is incorrect.')
-
+    
     username = StringField('Username',
                            validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email',
@@ -34,11 +34,13 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Sign Up')
 
     def validate_username(self, username):
+        from app import User
         user = User.query.filter_by(username=username.data).first()
         if user:
             raise ValidationError('Username is taken.')
     
     def validate_email(self, email):
+        from app import User
         email = User.query.filter_by(email=email.data).first()
         if email:
             raise ValidationError('E-Mail is taken.')
