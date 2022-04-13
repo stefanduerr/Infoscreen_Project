@@ -3,28 +3,25 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 # import app
-from app import *
+from app import User
 import re
 
 file = open('registration_key.txt', 'r')
 read = file.readlines()
 regex = r"[][']"
 patn = re.sub(regex, "", str(read))
-print("test" + patn)
 
 
 class RegistrationForm(FlaskForm):
 
     def validate_reg(self, registration_token):
-        print(str(registration_token.data))
+        # print(str(registration_token.data))
         reg_token = patn
         r_t = str(registration_token.data)
-        print(reg_token)
+        # print(reg_token)
         if not r_t == reg_token:
-            print('ti') 
+            # print('ti') 
             raise ValidationError('Token is incorrect.')
-        else:
-            print('tc')
 
     username = StringField('Username',
                            validators=[DataRequired(), Length(min=2, max=20)])
