@@ -35,10 +35,10 @@ UPLOAD_VIDEO = Path.cwd().joinpath('static', 'uploads', 'video')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['UPLOAD_VIDEO'] = UPLOAD_VIDEO
 ALLOWED_EXTENSIONS = {'mp4'}
-cur_dat = datetime.now()
-today = date.today() 
-# - timedelta(days=1)  =   yesterday
-current_datetime = cur_dat.strftime("%d/%m/%Y %H:%M:%S")
+# cur_dat = datetime.now()
+
+# # - timedelta(days=1)  =   yesterday
+# current_datetime = cur_dat.strftime("%d/%m/%Y %H:%M:%S")
 
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
@@ -155,7 +155,10 @@ def upload_video(folder):
         for f in files:
             os.remove(os.path.join(UPLOAD_VIDEO, f))
         if file and allowed_file(file.filename):
+            today = date.today()
             LFname = "Log " + str(today) + ".log"
+            cur_dat = datetime.now()
+            current_datetime = cur_dat.strftime("%d/%m/%Y %H:%M:%S")
             logging.basicConfig(filename=LFname, level=logging.INFO)
             logging.info(" " + current_datetime + ": " + current_user.username + ' uploaded ' + file.filename + ' on ' + folder + '.')
             filename = secure_filename(file.filename)
