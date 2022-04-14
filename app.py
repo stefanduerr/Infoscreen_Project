@@ -1,5 +1,5 @@
 import os
-from flask import Flask, flash, request, redirect, url_for, send_from_directory, render_template
+from flask import Flask, flash, request, redirect, url_for, send_from_directory, render_template, Response
 from werkzeug.utils import secure_filename
 from flask_caching import Cache
 from pathlib import Path
@@ -8,9 +8,13 @@ from forms import *
 from flask_sqlalchemy import SQLAlchemy
 import csv
 import logging
+import datetime
 from datetime import datetime, date, timedelta
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user, logout_user, login_required
+import time
+from threading import Thread
+from jinja2 import Template
 
 
 log = logging.getLogger('werkzeug')
@@ -35,10 +39,7 @@ UPLOAD_VIDEO = Path.cwd().joinpath('static', 'uploads', 'video')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['UPLOAD_VIDEO'] = UPLOAD_VIDEO
 ALLOWED_EXTENSIONS = {'mp4'}
-# cur_dat = datetime.now()
 
-# # - timedelta(days=1)  =   yesterday
-# current_datetime = cur_dat.strftime("%d/%m/%Y %H:%M:%S")
 
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
@@ -101,11 +102,6 @@ def home():
     return render_template('index.html',
                            sites=get_sites(), state=loginstatus)
 
-# @app.route('/', methods=['GET'])
-# def play_video2():
-#     videos = os.listdir('/home/lukas.schweighofer/flaskProjectTV/static/uploads/video/')
-#     return render_template('player.html',
-#     videos=videos)
 @app.route('/stream/<site>', methods=['GET'])
 @cache.cached(timeout=50)
 def play_video(site):
@@ -117,8 +113,6 @@ def play_video(site):
     return render_template('player.html',
                            site=site,
                            videos=videos)
-
-
 
 def get_sites():
     # open the file in read mode
@@ -224,23 +218,24 @@ def editscreens():
     return render_template('editscreens.html',
                            sites=get_sites(), state=loginstatus)
 
-# print('hello waorld')
+@app.route('/time_feed')
+def time_feed():
+    def generate():
+        yield datetime.now().strftime("%Y.%m.%d | %H:%M:%S")  # return also will work
+    return Response(generate(), mimetype='text') 
 
-# def compare_test():
-#     a = "abs"
-#     b = "abs"
-#     if not a is b:
-#         print('xti') 
-#     else:
-#         print('xtc')
+# ping function, scheitert noch an adminrechten
 
-# compare_test()
-# init_db()
+hostsfile=open("hosts.txt", "r")
+lines=hostsfile.readlines()
 
-# mylist = list(range(1, 51))
-# for x in mylist:
-#     print("10.90.12." + str(x))
-
+for line in lines:
+    response=os.system("ping -c 1 " + line)
+    if (response == 0):
+        status = line.rstrip() + " is Reachable"
+    else:
+        status = line + " is Not reachable"
+    print(status)
 
 
 if __name__ == '__main__':
