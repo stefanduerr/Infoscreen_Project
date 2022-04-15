@@ -232,13 +232,13 @@ def time_feed():
 # ping function, scheitert noch an adminrechten
 
 
-# s = sched.scheduler(time.time, time.sleep)
-# def ping_daily(sc): 
-#     ping()
-#     # do your stuff
-#     sc.enter(86400, 1, ping_daily, (sc,))
+s = sched.scheduler(time.time, time.sleep)
+def ping_daily(sc): 
+    ping()
+    # do your stuff
+    sc.enter(2, 1, ping_daily, (sc,))
 
-# s.enter(5, 1, ping_daily, (s,))
+s.enter(5, 1, ping_daily, (s,))
 
 def ping():
     if platform.system() == "Windows":
@@ -251,10 +251,11 @@ def ping():
 
 
 
-
+# Thread(target = print("test")).start()
+# Thread(target = s.run()).start()
 
 if __name__ == '__main__':
     
-    # Thread(target = s.run()).start()
+    
     app.run(debug=True)
     
