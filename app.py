@@ -16,6 +16,9 @@ import time
 from threading import Thread
 from jinja2 import Template
 
+import ctypes, sys
+
+
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -226,17 +229,24 @@ def time_feed():
 
 # ping function, scheitert noch an adminrechten
 
-hostsfile=open("hosts.txt", "r")
-lines=hostsfile.readlines()
 
-for line in lines:
-    response=os.system("ping -c 1 " + line)
-    if (response == 0):
-        status = line.rstrip() + " is Reachable"
-    else:
-        status = line + " is Not reachable"
-    print(status)
 
+
+def ping():
+    hostsfile=open("hosts.txt", "r")
+    lines=hostsfile.readlines()
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, "app.py", None, 1)
+    for line in lines:
+        response=os.system("ping -c 1 " + line)
+        
+        if (response == 0):
+            status = line.rstrip() + " is Reachable"
+        else:
+            status = line + " is Not reachable"
+        print(status)
+    
+
+ping()
 
 if __name__ == '__main__':
     
