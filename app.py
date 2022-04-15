@@ -15,7 +15,9 @@ from flask_login import LoginManager, UserMixin, login_user, current_user, logou
 import time
 from threading import Thread
 from jinja2 import Template
-
+import platform
+import subprocess
+import sched, time
 import ctypes, sys
 
 
@@ -230,25 +232,29 @@ def time_feed():
 # ping function, scheitert noch an adminrechten
 
 
+s = sched.scheduler(time.time, time.sleep)
+def ping_daily(sc): 
+    ping()
+    # do your stuff
+    sc.enter(86400, 1, ping_daily, (sc,))
 
+s.enter(5, 1, ping_daily, (s,))
 
 def ping():
-    hostsfile=open("hosts.txt", "r")
-    lines=hostsfile.readlines()
-    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, "app.py", None, 1)
-    for line in lines:
-        response=os.system("ping -c 1 " + line)
+    if platform.system() == "Windows":
+        print("No Server Environment.")
+    else:
+        bashCommand = "sudo fping -s -g 10.90.12.1 10.90.12.50"
         
-        if (response == 0):
-            status = line.rstrip() + " is Reachable"
-        else:
-            status = line + " is Not reachable"
-        print(status)
-    
+        process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+        output, error = process.communicate()
 
-ping()
+
+
+
 
 if __name__ == '__main__':
     
+    Thread(target = s.run()).start()
     app.run(debug=True)
     
