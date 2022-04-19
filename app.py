@@ -22,32 +22,30 @@ import ctypes, sys
 
 
 
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
+
 
 app = Flask(__name__)
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+UPLOAD_FOLDER = Path.cwd().joinpath('static', 'uploads')
+UPLOAD_VIDEO = Path.cwd().joinpath('static', 'uploads', 'video')
+cache = Cache(app)
+CWD = Path.cwd()
+STATIC = Path.cwd().joinpath('static')
+ALLOWED_EXTENSIONS = {'mp4'}
+
 config = {
     "SECRET_KEY": "6d8ed540960d1085d183d8e5d236f2da",
     "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
     "CACHE_DEFAULT_TIMEOUT": 300,
-    "TEMPLATES_AUTO_RELOAD": True
+    "TEMPLATES_AUTO_RELOAD": True,
+    "UPLOAD_FOLDER": UPLOAD_FOLDER,
+    "UPLOAD_VIDEO": UPLOAD_VIDEO,
+    "SQLALCHEMY_DATABASE_URI": 'sqlite:///site.db'
 }
 
 
 app.config.from_mapping(config)
-cache = Cache(app)
-CWD = Path.cwd()
-print(CWD)
-STATIC = Path.cwd().joinpath('static')
-UPLOAD_FOLDER = Path.cwd().joinpath('static', 'uploads')
-UPLOAD_VIDEO = Path.cwd().joinpath('static', 'uploads', 'video')
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['UPLOAD_VIDEO'] = UPLOAD_VIDEO
-ALLOWED_EXTENSIONS = {'mp4'}
-
-
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
@@ -97,6 +95,10 @@ loginstatus="true"
 @app.route('/error_test_page', methods=['GET'])
 def notFound():
     return render_template('error_test_page.html')
+
+@app.route('/custom_404', methods=['GET'])
+def fourohfour():
+    return render_template('custom_404.html')
 
 @app.route('/', methods=['GET'])
 def default():
