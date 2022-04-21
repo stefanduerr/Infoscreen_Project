@@ -59,6 +59,7 @@ div.about {
   margin-left: auto;
   margin-right: auto;
   text-align: center;
+  margin-top: 10px;
 }
 
 /* h1 {
@@ -162,6 +163,8 @@ table.fixed td:nth-of-type(3) {width:20px;}/*Setting the width of column 3.*/
   margin-right: auto;
   padding-top: 20px;
   padding-bottom: 20px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 .infoscr {
@@ -201,4 +204,21 @@ table.fixed td:nth-of-type(3) {width:20px;}/*Setting the width of column 3.*/
   top: 5px;/*newly added*/
   margin: 0.5em 0.5em 0.5em 0.5em;
   background-color: #ffffff;
+}
+
+.customfileupload {
+  border: 1px solid rgb(22, 22, 22);
+  display: inline-block;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  background-image: linear-gradient(180deg, rgb(255, 255, 255), rgb(199, 228, 255));
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.submitb {
+  margin-bottom:5px;
 }

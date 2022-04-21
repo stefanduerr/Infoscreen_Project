@@ -1,6 +1,7 @@
 from xml.dom import ValidationErr
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateField, TimeField
+from flask_wtf.file import FileField, FileRequired
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 # import app
 
@@ -54,12 +55,27 @@ class RegistrationForm(FlaskForm):
     #     else:
     #         print('tc')
 
-    
-
-
 class LoginForm(FlaskForm):
     email = StringField('Email',
                         validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
+
+class UploadForm(FlaskForm):
+
+    def check_extension(form, field):
+        if field.data:
+            filename = field.data.filename
+            # print(dir(field.data))
+            if not filename.lower().endswith(('.mp4', '.wmv', '.mov')):
+                raise ValidationError('Please provide a supported video file (.mp4, .wmw, .mov)!')
+        else:
+            raise ValidationError('Please select a file!')
+
+    video = FileField('Choose File', validators=[check_extension])
+    ifnow = BooleanField('Instant Upload', default=False)
+    date = DateField('Publish Date', format='%Y-%m-%d')
+    time = TimeField('Publish Time')
+    submit = SubmitField('Upload Video')
+    folder = 'p09'

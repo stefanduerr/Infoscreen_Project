@@ -22,13 +22,25 @@
     
     {% endblock %}
 
+    {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
     <div class="loginbox">
         {% if current_user.is_authenticated %}
         Currently logged in as <b>{{ current_user.username }}</b>
+        <b><a href="{{ url_for('home') }}">Home</a></b> |
+        <b><a href="{{ url_for('editscreens') }}">Videos</a></b> |
         <b><a href="{{ url_for('logout') }}">Logout</a></b>
         {% else %}
-        <b><a href="{{ url_for('home') }}">Home</a> |
-        <b><a href="{{ url_for('login') }}">Login</a> |
+        <b><a href="{{ url_for('home') }}">Home</a></b> |
+        <b><a href="{{ url_for('login') }}">Login</a></b> |
         <a href="{{ url_for('register') }}">Register</a></b>
         {% endif %}
         </div>
