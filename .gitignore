@@ -1,0 +1,4 @@
+\flaskEnv
+\.vscode
+\__pycache__
+\.idea
