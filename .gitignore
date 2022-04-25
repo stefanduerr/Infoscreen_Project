@@ -1,5 +1,15 @@
-\flaskEnv
-\.vscode
-\__pycache__
-\.idea
-\venv
+.vscode/
+__pycache__/
+.idea/
+venv/
+.pyc
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+flaskEnv/
