@@ -1,27 +1,32 @@
 {% extends "layout.html" %}
-{% block content %}
-<div>
-<table class="table.fixed">
-    {% for site in sites %}
-        <tr>
-             <td class="table.fixed td:nth-of-type(1)"><button class="button"
-                    onclick="window.location.href = '/uploadvideo/{{ site }}'">
-                Upload Video {{ site }}
-             </button></td>
-            <td class="table.fixed td:nth-of-type(2)"><button class="button"
-                    onclick="window.location.href = '/stream/{{ site }}'">
-                Show {{ site }}
-                10.90.12.2/{{ site }}
-            </button></td>
-            <td class="table.fixed td:nth-of-type(3)"><button class="button"
-                    onclick="window.location.href = '/clear/{{ site }}'">
-                Clear {{ site }} (Deletes Files!)
-            </button></td>
-        </tr>
 
-    {% endfor %}
-</table>
+{% block content %}
+
+<div class="infoscr">
+
+{% if current_user.is_authenticated %}
+Thanks for logging in! <br> You are now able to <a href="/editscreens">edit content</a>.
+{% else %}
+Welcome to the Infoscreen-Webpage!<br>
+To continue, please Login below.<br>
+{% endif %}
 </div>
-{% endblock %}
-</div>
+
+<div id="clock"></div>
+<script>
+    var clock = document.getElementById("clock");
+
+    setInterval(() => {
+        fetch("{{ url_for('time_feed') }}")
+        .then(response => {
+                response.text().then(t => {clock.innerHTML = t})
+            });
+        }, 1000);  
+</script>
+    
+
+
+    {% endblock %}
+
+
 </html>
