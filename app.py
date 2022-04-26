@@ -1,7 +1,6 @@
 import os
 from flask import Flask, flash, request, redirect, url_for, render_template, Response
 from werkzeug.utils import secure_filename
-from flask_caching import Cache
 from pathlib import Path
 # import forms
 from forms import LoginForm, RegistrationForm, UploadForm
@@ -28,15 +27,12 @@ log2 = logging.getLogger('apscheduler')
 log2.setLevel(logging.ERROR)
 UPLOAD_FOLDER = Path.cwd().joinpath('static', 'uploads')
 UPLOAD_VIDEO = Path.cwd().joinpath('static', 'uploads', 'video')
-cache = Cache(config={'CACHE_TYPE': 'SimpleCache'})
 CWD = Path.cwd()
 STATIC = Path.cwd().joinpath('static')
 ALLOWED_EXTENSIONS = {'mp4'}
 
 config = {
     "SECRET_KEY": "6d8ed540960d1085d183d8e5d236f2da",
-    "CACHE_TYPE": 'SimpleCache',  # Flask-Caching related configs
-    "CACHE_DEFAULT_TIMEOUT": 300,
     "TEMPLATES_AUTO_RELOAD": True,
     "UPLOAD_FOLDER": UPLOAD_FOLDER,
     "UPLOAD_VIDEO": UPLOAD_VIDEO,
@@ -100,7 +96,6 @@ def home():
                            sites=get_sites())
 
 @app.route('/stream/<site>', methods=['GET'])
-@cache.cached(timeout=50)
 def play_video(site):
     videos = os.listdir(Path.cwd().joinpath('static', 'uploads', 'video', site))
     if videos:

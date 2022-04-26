@@ -14,3 +14,4 @@ env.bak/
 venv.bak/
 flaskEnv/
 site.db
+site.db
