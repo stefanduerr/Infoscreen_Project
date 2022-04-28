@@ -1,4 +1,5 @@
 import os
+from re import S, split
 from flask import Flask, flash, request, redirect, url_for, render_template, Response
 from werkzeug.utils import secure_filename
 from pathlib import Path
@@ -126,21 +127,25 @@ def get_sites():
 @app.route('/upload/<folder>', methods=['GET', 'POST'])
 @login_required
 def upload(folder):
-    # folder = "p19"
     form = UploadForm()
-    
-    if folder == 'p09':
-        text = 'Pavillon 9'
-    elif folder == 'p15':
-        text = 'Pavillon 15'
-    elif folder == 'p16':
-        text = 'Pavillon 16'
-    elif folder == 'p17':
-        text = 'Pavillon 17'
-    elif folder == 'p18':
-        text = 'Pavillon 18'
-    elif folder == 'p19':
-        text = 'Pavillon 19'
+
+
+    split = folder.split();
+    text = "Pavillon" + " " + split[len(split)-1]
+
+
+    # if folder == 'p09':
+    #     text = 'Pavillon 9'
+    # elif folder == 'p15':
+    #     text = 'Pavillon 15'
+    # elif folder == 'p16':
+    #     text = 'Pavillon 16'
+    # elif folder == 'p17':
+    #     text = 'Pavillon 17'
+    # elif folder == 'p18':
+    #     text = 'Pavillon 18'
+    # elif folder == 'p19':
+    #     text = 'Pavillon 19'
 
     if form.validate_on_submit():
         if form.ifnow.data:
