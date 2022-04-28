@@ -3,7 +3,6 @@ from re import S, split
 from flask import Flask, flash, request, redirect, url_for, render_template, Response
 from werkzeug.utils import secure_filename
 from pathlib import Path
-# import forms
 from forms import LoginForm, RegistrationForm, UploadForm
 from flask_sqlalchemy import SQLAlchemy
 import csv
@@ -130,9 +129,10 @@ def upload(folder):
     form = UploadForm()
 
 
-    split = folder.split();
-    text = "Pavillon" + " " + split[len(split)-1]
+         
+    text = "Pavillon" + " " + folder.upper()
 
+            
 
     # if folder == 'p09':
     #     text = 'Pavillon 9'
