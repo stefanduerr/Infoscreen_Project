@@ -21,8 +21,8 @@
 
     
     {% endblock %}
-
-    {% with messages = get_flashed_messages() %}
+  <!-- show error messages -->
+  {% with messages = get_flashed_messages() %}
   {% if messages %}
     <ul class=flashes>
     {% for message in messages %}
@@ -30,7 +30,7 @@
     {% endfor %}
     </ul>
   {% endif %}
-{% endwith %}
+  {% endwith %}
 
     <div class="loginbox">
         {% if current_user.is_authenticated %}
@@ -41,7 +41,7 @@
         {% else %}
         <b><a href="{{ url_for('home') }}">Home</a></b> |
         <b><a href="{{ url_for('login') }}">Login</a></b> |
-        <a href="{{ url_for('register') }}">Register</a></b>
+        <b><a href="{{ url_for('register') }}">Register</a></b>
         {% endif %}
         </div>
 

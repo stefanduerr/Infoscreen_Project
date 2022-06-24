@@ -7,7 +7,7 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationE
 
 import re
 
-file = open('registration_key.txt', 'r')
+file = open('C:/Users/stefan.duerr/Documents/flaskProjectTV/registration_key.txt', 'r')
 read = file.readlines()
 regex = r"[][']"
 patn = re.sub(regex, "", str(read))
@@ -46,14 +46,6 @@ class RegistrationForm(FlaskForm):
         if email:
             raise ValidationError('E-Mail is taken.')
 
-    # def validate_reg(self, registration_token):
-    #     reg_token = "hCQAGqak3x"
-    #     print("regT: " + registration_token)
-    #     if not registration_token is reg_token:
-    #         print('ti') 
-    #         raise ValidationError('Token is incorrect.')
-    #     else:
-    #         print('tc')
 
 class LoginForm(FlaskForm):
     email = StringField('Email',

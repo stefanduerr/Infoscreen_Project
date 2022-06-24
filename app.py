@@ -1,9 +1,9 @@
 import os
+import sys
 from flask import Flask, flash, request, redirect, url_for, send_from_directory, render_template, Response
 from werkzeug.utils import secure_filename
 from flask_caching import Cache
 from pathlib import Path
-# import forms
 from forms import LoginForm, RegistrationForm, UploadForm
 from flask_sqlalchemy import SQLAlchemy
 import csv
@@ -13,11 +13,6 @@ from datetime import datetime, date, timedelta
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user, logout_user, login_required
 import time
-from threading import Thread
-from jinja2 import Template
-import platform
-import subprocess
-import sched, time
 from apscheduler.schedulers.background import BackgroundScheduler
 import shutil
 
@@ -51,8 +46,10 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
+    print(User.query.get(int(user_id)), file=sys.stdout)
     return User.query.get(int(user_id))
 
+# User-Klasse für Datenbank
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
@@ -74,13 +71,15 @@ def __repr__(self):
 def init_db():
     db.create_all()
 
-
+# Erstellt Datenbank
 init_db()
 
+# File allowed?
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# Routing zu Seiten
 @app.route('/error_test_page', methods=['GET'])
 def notFound():
     return render_template('error_test_page.html')
@@ -95,8 +94,8 @@ def default():
 
 @app.route('/home')
 def home():
-    return render_template('index.html',
-                           sites=get_sites())
+    return render_template('index.html')
+                        #    sites=get_sites())
 
 @app.route('/stream/<site>', methods=['GET'])
 @cache.cached(timeout=50)
@@ -110,9 +109,10 @@ def play_video(site):
                            site=site,
                            videos=videos)
 
+# Liest Seiten von CSV File (p9,p15,...)
 def get_sites():
     # open the file in read mode
-    filename = open('sites.csv', 'r')
+    filename = open('C:/Users/stefan.duerr/Documents/flaskProjectTV/sites.csv', 'r')
     # creating dictreader object
     sitesfile = csv.DictReader(filename)
 
@@ -126,7 +126,7 @@ def get_sites():
             os.mkdir(Path.cwd().joinpath('static', 'uploads', 'video', site))
     return sites
 
-
+# Routing zu Upload-directory + Upload-Funktion
 @app.route('/upload/<folder>', methods=['GET', 'POST'])
 @login_required
 def upload(folder):
@@ -146,6 +146,7 @@ def upload(folder):
     elif folder == 'p19':
         text = 'Pavillon 19'
 
+# Wenn Upload-Form korrekt submitted?
     if form.validate_on_submit():
         if form.ifnow.data:
             files = [f for f in os.listdir(Path.cwd().joinpath('static', 'uploads', 'video', folder))
@@ -238,6 +239,7 @@ def clear_slides(site):
     return render_template('deleted.html',
                            site=site)
 
+# Route zu Register + Register-Funktion
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -252,6 +254,7 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
+# Route zu Login + Login-Funktion
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -277,6 +280,7 @@ def logout():
 def account():
     return render_template('account.html', title='Account')
 
+# Route, um Videos zu ändern
 @app.route("/editscreens")
 @login_required
 def editscreens():
@@ -288,28 +292,6 @@ def time_feed():
     def generate():
         yield datetime.now().strftime("%Y.%m.%d | %H:%M:%S")  # return also will work
     return Response(generate(), mimetype='text') 
-
-# ping function, scheitert noch an adminrechten
-
-# s = sched.scheduler(time.time, time.sleep)
-# def ping_daily(sc): 
-#     ping()
-#     # do your stuff
-#     sc.enter(2, 1, ping_daily, (sc,))
-
-# s.enter(5, 1, ping_daily, (s,))
-
-# def ping():
-#     if platform.system() == "Windows":
-#         print("No Server Environment.")
-#     else:
-#         bashCommand = "sudo fping -s -g 10.90.12.1 10.90.12.50"
-        
-#         process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-#         output, error = process.communicate()
-
-# Thread(target = print("test")).start()
-# Thread(target = s.run()).start()
 
 if __name__ == '__main__':
     
