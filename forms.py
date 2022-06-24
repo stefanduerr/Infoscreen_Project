@@ -60,7 +60,7 @@ class UploadForm(FlaskForm):
         if field.data:
             filename = field.data.filename
             # print(dir(field.data))
-            if not filename.lower().endswith(('.mp4', '.wmv', '.mov')):
+            if not filename.lower().endswith('.mp4'):
                 raise ValidationError('Please provide a supported video file (.mp4, .wmw, .mov)!')
         else:
             raise ValidationError('Please select a file!')
@@ -70,4 +70,3 @@ class UploadForm(FlaskForm):
     date = DateField('Publish Date', format='%Y-%m-%d')
     time = TimeField('Publish Time')
     submit = SubmitField('Upload Video')
-    folder = 'p09'

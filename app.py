@@ -17,10 +17,12 @@ import shutil
 import sys
 
 app = Flask(__name__)
+
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 log2 = logging.getLogger('apscheduler')
 log2.setLevel(logging.ERROR)
+
 UPLOAD_FOLDER = Path.cwd().joinpath('static', 'uploads')
 UPLOAD_VIDEO = Path.cwd().joinpath('static', 'uploads', 'video')
 cache = Cache(config={'CACHE_TYPE': 'SimpleCache'})
@@ -45,6 +47,7 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+#Login User
 @login_manager.user_loader
 def load_user(user_id):
     print(User.query.get(int(user_id)), file=sys.stdout)
@@ -61,6 +64,7 @@ class User(db.Model, UserMixin):
 def __repr__(self):
     return f"User('{self.username}', '{self.email}', '{self.image_file}')"
 
+# deprecated
 class Site(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=True, nullable=False)
@@ -69,6 +73,7 @@ class Site(db.Model):
 def __repr__(self):
     return f"User('{self.username}', '{self.email}', '{self.image_file}')"
 
+# initializes SQLite
 def init_db():
     db.create_all()
 
@@ -107,8 +112,10 @@ def play_video(site):
     else:
         site = "fallback"
     return render_template('player.html',
+# Variablen in HTML verwenden
                            site=site,
                            videos=videos)
+
 
 # Liest Seiten von CSV File (p9,p15,...)
 def get_sites():
@@ -129,6 +136,7 @@ def get_sites():
 
 # Routing zu Upload-directory + Upload-Funktion
 @app.route('/upload/<folder>', methods=['GET', 'POST'])
+
 @login_required
 def upload(folder):
     # folder = "p19"
@@ -149,6 +157,7 @@ def upload(folder):
 
 # Wenn Upload-Form korrekt submitted?
     if form.validate_on_submit():
+        #Wenn User "Instant Upload" auswählt
         if form.ifnow.data:
             files = [f for f in os.listdir(Path.cwd().joinpath('static', 'uploads', 'video', folder))
                     if f.endswith(".mp4")]
@@ -165,6 +174,7 @@ def upload(folder):
             logging.info(" " + current_datetime + ": " + current_user.username + ' uploaded ' + f.filename + ' on ' + folder + '.')
 
             return render_template('video_uploaded.html')
+        #Wenn User für Zukunft Video scheduled
         else:
             usertime = str(form.date.data) + ' ' + str(form.time.data)
             usertime_object = datetime.strptime(usertime, '%Y-%m-%d %H:%M:%S')
@@ -199,36 +209,6 @@ def upload(folder):
     print(form.errors)
 
     return render_template('uploadtest.html', form=form, text=text)
-
-@app.route('/uploadvideo/<folder>', methods=['GET', 'POST'])
-@login_required
-def upload_video(folder):
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # If the user does not select a file, the browser submits an
-        # empty file without a filename.
-        if file.filename == ' ':
-            flash('No selected file')
-            return redirect(request.url)
-        files = [f for f in os.listdir(UPLOAD_VIDEO)
-                 if f.endswith(".mp4")]
-        for f in files:
-            os.remove(os.path.join(UPLOAD_VIDEO, f))
-        if file and allowed_file(file.filename):
-            today = date.today()
-            LFname = "Log " + str(today) + ".log"
-            cur_dat = datetime.now()
-            current_datetime = cur_dat.strftime("%d/%m/%Y %H:%M:%S")
-            logging.basicConfig(filename=LFname, level=logging.INFO)
-            logging.info(" " + current_datetime + ": " + current_user.username + ' uploaded ' + file.filename + ' on ' + folder + '.')
-            filename = secure_filename(file.filename)
-            file.save(Path.cwd().joinpath('static', 'uploads', 'video', folder, filename))
-            return render_template('video_uploaded.html')
-    return render_template('upload.html'), folder
 
 @app.route('/clear/<site>', methods=['GET', 'DELETE'])
 #  Route um Videos zu entfernen
@@ -297,4 +277,5 @@ def time_feed():
 if __name__ == '__main__':
     
     app.run(debug=True)
+    # https://www.educba.com/flask-debug-mode/
     
