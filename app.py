@@ -1,6 +1,5 @@
 import os
-import sys
-from flask import Flask, flash, request, redirect, url_for, send_from_directory, render_template, Response
+from flask import Flask, flash, request, redirect, url_for, render_template, Response
 from werkzeug.utils import secure_filename
 from flask_caching import Cache
 from pathlib import Path
@@ -15,6 +14,7 @@ from flask_login import LoginManager, UserMixin, login_user, current_user, logou
 import time
 from apscheduler.schedulers.background import BackgroundScheduler
 import shutil
+import sys
 
 app = Flask(__name__)
 log = logging.getLogger('werkzeug')
@@ -23,19 +23,20 @@ log2 = logging.getLogger('apscheduler')
 log2.setLevel(logging.ERROR)
 UPLOAD_FOLDER = Path.cwd().joinpath('static', 'uploads')
 UPLOAD_VIDEO = Path.cwd().joinpath('static', 'uploads', 'video')
-cache = Cache(app)
+cache = Cache(config={'CACHE_TYPE': 'SimpleCache'})
 CWD = Path.cwd()
 STATIC = Path.cwd().joinpath('static')
 ALLOWED_EXTENSIONS = {'mp4'}
 
 config = {
     "SECRET_KEY": "6d8ed540960d1085d183d8e5d236f2da",
-    "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
+    "CACHE_TYPE": 'SimpleCache',  # Flask-Caching related configs
     "CACHE_DEFAULT_TIMEOUT": 300,
     "TEMPLATES_AUTO_RELOAD": True,
     "UPLOAD_FOLDER": UPLOAD_FOLDER,
     "UPLOAD_VIDEO": UPLOAD_VIDEO,
-    "SQLALCHEMY_DATABASE_URI": 'sqlite:///site.db'
+    "SQLALCHEMY_DATABASE_URI": 'sqlite:///site.db',
+    "SQLALCHEMY_TRACK_MODIFICATIONS": False
 }
 
 app.config.from_mapping(config)
